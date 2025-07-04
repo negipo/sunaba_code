@@ -12,7 +12,6 @@ import (
 
 var (
 	writablePaths []string
-	allowedPorts  []int
 	claudeConfig  bool
 )
 
@@ -46,7 +45,6 @@ func init() {
 	}
 
 	rootCmd.Flags().StringSliceVarP(&writablePaths, "writable", "w", []string{cwd}, "Paths where write access is allowed")
-	rootCmd.Flags().IntSliceVar(&allowedPorts, "ports", []int{}, "Specific ports to allow")
 	rootCmd.Flags().BoolVar(&claudeConfig, "claude-config", true, "Allow access to Claude configuration files")
 }
 
@@ -89,7 +87,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	config := sandbox.ProfileConfig{
 		WritablePaths: expandedPaths,
 		NetworkAccess: true,
-		AllowedPorts:  allowedPorts,
+		AllowedPorts:  []int{}, // No specific port restrictions
 	}
 
 	// Create executor
@@ -119,9 +117,6 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Fprintf(os.Stderr, "Running '%s' in sandbox with write access to: %v\n", command, expandedPaths)
-	if len(allowedPorts) > 0 {
-		fmt.Fprintf(os.Stderr, "Network access enabled for ports: %v\n", allowedPorts)
-	}
 
 	return executor.Execute(command, commandArgs, os.Environ())
 }
