@@ -72,6 +72,7 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	if claudeConfig {
 		homeDir, err := os.UserHomeDir()
 		if err == nil {
+			// Add specific Claude-related files and directories for minimal security risk
 			claudeDirs := []string{
 				filepath.Join(homeDir, ".claude"),
 				filepath.Join(homeDir, ".claude.json"),
@@ -80,6 +81,10 @@ func runCommand(cmd *cobra.Command, args []string) error {
 			for _, dir := range claudeDirs {
 				expandedPaths = append(expandedPaths, dir)
 			}
+			
+			// Add home directory for Claude's temporary files (required for OAuth and locking)
+			// This is a security trade-off needed for Claude Code to function properly
+			expandedPaths = append(expandedPaths, homeDir)
 		}
 	}
 

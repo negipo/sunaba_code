@@ -41,9 +41,7 @@ func (e *Executor) Execute(command string, args []string, env []string) error {
 		"-f", e.profilePath,
 	}
 
-	// Add sandbox-specific environment variables to prevent Claude from creating lock files
-	env = append(env, "CLAUDE_CONFIG_READONLY=1")
-	env = append(env, "NODE_ENV=production")
+	// No special environment variables needed - Claude can now write to home directory
 
 	// Add environment variables
 	if len(env) > 0 {
