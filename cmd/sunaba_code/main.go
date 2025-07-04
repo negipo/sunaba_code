@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/negipo/sunaba_code/internal/claude"
 	"github.com/negipo/sunaba_code/pkg/sandbox"
 	"github.com/spf13/cobra"
 )
@@ -23,14 +24,17 @@ By default, only the current directory is writable, and no network access is all
 
 Examples:
   # Run Claude Code with default settings (current dir writable)
-  sunaba_code -- claude
+  sunaba_code
 
   # Allow writing to specific directories
-  sunaba_code -w ~/projects -w /tmp -- claude
+  sunaba_code -w ~/projects -w /tmp
 
   # Enable network access
-  sunaba_code --network -- claude`,
-	Args: cobra.MinimumNArgs(1),
+  sunaba_code --network
+
+  # Run a different command in sandbox
+  sunaba_code -- /usr/bin/python script.py`,
+	Args: cobra.ArbitraryArgs,
 	RunE: runCommand,
 }
 
@@ -76,9 +80,24 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	}
 	defer executor.Cleanup()
 
-	// Execute the command
-	command := args[0]
-	commandArgs := args[1:]
+	// Handle command - if no command specified, try to find claude
+	var command string
+	var commandArgs []string
+
+	if len(args) == 0 || args[0] == "claude" {
+		// Find claude executable
+		claudePath, err := claude.FindClaudeExecutable()
+		if err != nil {
+			return err
+		}
+		command = claudePath
+		if len(args) > 1 {
+			commandArgs = args[1:]
+		}
+	} else {
+		command = args[0]
+		commandArgs = args[1:]
+	}
 
 	fmt.Fprintf(os.Stderr, "Running '%s' in sandbox with write access to: %v\n", command, expandedPaths)
 	if networkAccess {

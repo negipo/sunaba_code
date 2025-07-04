@@ -6,7 +6,8 @@
       "Bash(mkdir:*)",
       "Bash(go get:*)",
       "Bash(go build:*)",
-      "Bash(./sunaba_code --help)"
+      "Bash(./sunaba_code --help)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }
