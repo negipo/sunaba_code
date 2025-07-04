@@ -3,7 +3,10 @@
     "allow": [
       "Bash(go mod init:*)",
       "Bash(brew list:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(go get:*)",
+      "Bash(go build:*)",
+      "Bash(./sunaba_code --help)"
     ],
     "deny": []
   }
