@@ -12,7 +12,6 @@ import (
 
 var (
 	writablePaths []string
-	networkAccess bool
 	allowedPorts  []int
 	claudeConfig  bool
 )
@@ -47,16 +46,13 @@ func init() {
 	}
 
 	rootCmd.Flags().StringSliceVarP(&writablePaths, "writable", "w", []string{cwd}, "Paths where write access is allowed")
-	rootCmd.Flags().BoolVar(&networkAccess, "network", false, "Allow network access")
-	rootCmd.Flags().IntSliceVar(&allowedPorts, "ports", []int{}, "Specific ports to allow (requires --network)")
+	rootCmd.Flags().IntSliceVar(&allowedPorts, "ports", []int{}, "Specific ports to allow")
 	rootCmd.Flags().BoolVar(&claudeConfig, "claude-config", true, "Allow access to Claude configuration files")
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
-	// Validate flags
-	if len(allowedPorts) > 0 && !networkAccess {
-		return fmt.Errorf("--ports requires --network flag")
-	}
+	// Network access is enabled by default as Claude requires it for authentication
+	networkAccess := true
 
 	// Expand paths to absolute paths
 	expandedPaths := make([]string, len(writablePaths))
@@ -67,6 +63,9 @@ func runCommand(cmd *cobra.Command, args []string) error {
 		}
 		expandedPaths[i] = absPath
 	}
+
+	// Add /dev/null for output redirection
+	expandedPaths = append(expandedPaths, "/dev/null")
 
 	// Add Claude configuration directories if enabled
 	if claudeConfig {
