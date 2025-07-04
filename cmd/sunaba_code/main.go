@@ -51,8 +51,6 @@ func init() {
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
-	// Network access is enabled by default as Claude requires it for authentication
-	networkAccess := true
 
 	// Expand paths to absolute paths
 	expandedPaths := make([]string, len(writablePaths))
@@ -87,10 +85,10 @@ func runCommand(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Create sandbox configuration
+	// Create sandbox configuration (network access enabled by default)
 	config := sandbox.ProfileConfig{
 		WritablePaths: expandedPaths,
-		NetworkAccess: networkAccess,
+		NetworkAccess: true,
 		AllowedPorts:  allowedPorts,
 	}
 
