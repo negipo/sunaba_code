@@ -121,12 +121,8 @@ func runCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Fprintf(os.Stderr, "Running '%s' in sandbox with write access to: %v\n", command, expandedPaths)
-	if networkAccess {
-		if len(allowedPorts) > 0 {
-			fmt.Fprintf(os.Stderr, "Network access enabled for ports: %v\n", allowedPorts)
-		} else {
-			fmt.Fprintf(os.Stderr, "Full network access enabled\n")
-		}
+	if len(allowedPorts) > 0 {
+		fmt.Fprintf(os.Stderr, "Network access enabled for ports: %v\n", allowedPorts)
 	}
 
 	return executor.Execute(command, commandArgs, os.Environ())
