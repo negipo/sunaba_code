@@ -25,6 +25,12 @@ func GenerateProfile(config ProfileConfig) string {
 (allow process-exec)
 (allow file-read*)
 (allow file-read-metadata)
+(allow device-read)
+(allow device-write)
+(allow iokit-open)
+(allow iokit-set-properties)
+(allow iokit-get-properties)
+(allow mach-lookup)
 `
 
 	// Add network access if enabled

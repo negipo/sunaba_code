@@ -14,6 +14,7 @@ var (
 	writablePaths []string
 	networkAccess bool
 	allowedPorts  []int
+	claudeConfig  bool
 )
 
 var rootCmd = &cobra.Command{
@@ -48,6 +49,7 @@ func init() {
 	rootCmd.Flags().StringSliceVarP(&writablePaths, "writable", "w", []string{cwd}, "Paths where write access is allowed")
 	rootCmd.Flags().BoolVar(&networkAccess, "network", false, "Allow network access")
 	rootCmd.Flags().IntSliceVar(&allowedPorts, "ports", []int{}, "Specific ports to allow (requires --network)")
+	rootCmd.Flags().BoolVar(&claudeConfig, "claude-config", true, "Allow access to Claude configuration files")
 }
 
 func runCommand(cmd *cobra.Command, args []string) error {
@@ -64,6 +66,21 @@ func runCommand(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("invalid path %s: %w", path, err)
 		}
 		expandedPaths[i] = absPath
+	}
+
+	// Add Claude configuration directories if enabled
+	if claudeConfig {
+		homeDir, err := os.UserHomeDir()
+		if err == nil {
+			claudeDirs := []string{
+				filepath.Join(homeDir, ".claude"),
+				filepath.Join(homeDir, ".claude.json"),
+				filepath.Join(homeDir, ".config", "claude"),
+			}
+			for _, dir := range claudeDirs {
+				expandedPaths = append(expandedPaths, dir)
+			}
+		}
 	}
 
 	// Create sandbox configuration
